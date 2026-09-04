@@ -1,0 +1,60 @@
+name: Update ActionClip cask
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-actionclip-cask
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: macos-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out tap
+        uses: actions/checkout@v5
+
+      - name: Read and verify the latest stable release
+        run: .github/scripts/update-actionclip-cask.sh
+
+      - name: Detect cask update
+        id: changes
+        run: |
+          if git diff --quiet -- Casks/actionclip.rb; then
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Tap the repository and stage the candidate cask
+        if: steps.changes.outputs.updated == 'true'
+        run: |
+          brew tap gopublisher/tap
+          tap_repository="$(brew --repository gopublisher/tap)"
+          cp Casks/actionclip.rb "$tap_repository/Casks/actionclip.rb"
+
+      - name: Validate candidate cask
+        if: steps.changes.outputs.updated == 'true'
+        run: |
+          brew style --cask gopublisher/tap/actionclip
+          brew audit --cask --online gopublisher/tap/actionclip
+          brew livecheck --cask gopublisher/tap/actionclip
+          brew fetch --cask gopublisher/tap/actionclip
+
+      - name: Commit verified update
+        if: steps.changes.outputs.updated == 'true'
+        run: |
+          version="$(ruby -e 'puts File.read("Casks/actionclip.rb")[/^  version "([^"]+)"$/, 1]')"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/actionclip.rb
+          git diff --cached --check
+          git commit -m "actionclip $version"
+          git push

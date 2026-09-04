@@ -1,0 +1,42 @@
+name: Test cask
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out tap
+        uses: actions/checkout@v5
+
+      - name: Tap the checked-out repository
+        run: brew tap gopublisher/tap "$GITHUB_WORKSPACE"
+
+      - name: Check cask style
+        run: brew style --cask gopublisher/tap/actionclip
+
+      - name: Audit cask
+        run: brew audit --cask --online gopublisher/tap/actionclip
+
+      - name: Check the Sparkle feed
+        run: brew livecheck --cask gopublisher/tap/actionclip
+
+      - name: Install cask in an isolated app directory
+        run: brew install --cask --appdir="$RUNNER_TEMP/Applications" gopublisher/tap/actionclip
+
+      - name: Verify installed application
+        run: |
+          test -d "$RUNNER_TEMP/Applications/ActionClip.app"
+          codesign --verify --deep --strict --verbose=2 "$RUNNER_TEMP/Applications/ActionClip.app"
+          spctl --assess --type execute --verbose=2 "$RUNNER_TEMP/Applications/ActionClip.app"
+
+      - name: Uninstall cask
+        run: brew uninstall --cask gopublisher/tap/actionclip
