@@ -9,6 +9,10 @@ native macOS app that puts contextual actions beside selected text.
 brew install --cask gopublisher/tap/actionclip
 ```
 
+On Homebrew 6 and later, that fully qualified install command trusts only the
+ActionClip cask. It does not grant trust to every current or future item in the
+tap.
+
 ActionClip requires macOS 15 Sequoia or later. Homebrew downloads the same
 Developer ID-signed and Apple-notarized DMG published on the ActionClip website.
 

@@ -17,8 +17,20 @@ jobs:
       - name: Check out tap
         uses: actions/checkout@v5
 
-      - name: Tap the checked-out repository
-        run: brew tap gopublisher/tap "$GITHUB_WORKSPACE"
+      - name: Tap the checked-out repository for pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          brew tap gopublisher/tap "$GITHUB_WORKSPACE"
+          brew trust --cask gopublisher/tap/actionclip
+
+      - name: Install with the documented command
+        run: brew install --cask --appdir="$RUNNER_TEMP/Applications" gopublisher/tap/actionclip
+
+      - name: Verify installed application
+        run: |
+          test -d "$RUNNER_TEMP/Applications/ActionClip.app"
+          codesign --verify --deep --strict --verbose=2 "$RUNNER_TEMP/Applications/ActionClip.app"
+          spctl --assess --type execute --verbose=2 "$RUNNER_TEMP/Applications/ActionClip.app"
 
       - name: Check cask style
         run: brew style --cask gopublisher/tap/actionclip
@@ -28,15 +40,6 @@ jobs:
 
       - name: Check the Sparkle feed
         run: brew livecheck --cask gopublisher/tap/actionclip
-
-      - name: Install cask in an isolated app directory
-        run: brew install --cask --appdir="$RUNNER_TEMP/Applications" gopublisher/tap/actionclip
-
-      - name: Verify installed application
-        run: |
-          test -d "$RUNNER_TEMP/Applications/ActionClip.app"
-          codesign --verify --deep --strict --verbose=2 "$RUNNER_TEMP/Applications/ActionClip.app"
-          spctl --assess --type execute --verbose=2 "$RUNNER_TEMP/Applications/ActionClip.app"
 
       - name: Uninstall cask
         run: brew uninstall --cask gopublisher/tap/actionclip

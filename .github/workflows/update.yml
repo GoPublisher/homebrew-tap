@@ -37,6 +37,7 @@ jobs:
         if: steps.changes.outputs.updated == 'true'
         run: |
           brew tap gopublisher/tap
+          brew trust --cask gopublisher/tap/actionclip
           tap_repository="$(brew --repository gopublisher/tap)"
           cp Casks/actionclip.rb "$tap_repository/Casks/actionclip.rb"
 
