@@ -1,6 +1,6 @@
 cask "actionclip" do
-  version "2.3.1"
-  sha256 "63e1eca2e641761b1bbfaf26ca38c94df723dbf300de5226e75783973fbd0fb2"
+  version "2.3.2"
+  sha256 "46698037f478c42e419687fd96b9b786b495c0628bb3ef14b24a38754a5e5985"
 
   url "https://updates.actionclip.app/releases/#{version}/ActionClip-#{version}.dmg"
   name "ActionClip"
