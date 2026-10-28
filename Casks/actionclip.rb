@@ -1,15 +1,15 @@
 cask "actionclip" do
-  version "2.3.4"
-  sha256 "7c960ad9f056707d9e687df853903454708b2209ac41c0829f1cbebad3c26420"
+  version "2.3.4,649"
+  sha256 "868f2d24ea914884e8ee3607738cf566e847c32e737bea42c63bba7da1c38aae"
 
-  url "https://updates.actionclip.app/releases/#{version}/ActionClip-#{version}.dmg"
+  url "https://updates.actionclip.app/releases/#{version.csv.first}-#{version.csv.second}/ActionClip-#{version.csv.first}-#{version.csv.second}.dmg"
   name "ActionClip"
   desc "Run contextual actions on selected text"
   homepage "https://actionclip.app/"
 
   livecheck do
     url "https://updates.actionclip.app/appcast-v2.xml"
-    strategy :sparkle, &:short_version
+    strategy :sparkle, &:nice_version
   end
 
   auto_updates true
