@@ -1,6 +1,6 @@
 cask "actionclip" do
-  version "2.3.3"
-  sha256 "9046739bc3aab8ee23196d2ea176bf8753e83be48b26a1e1ee6464892c43af42"
+  version "2.3.4"
+  sha256 "7c960ad9f056707d9e687df853903454708b2209ac41c0829f1cbebad3c26420"
 
   url "https://updates.actionclip.app/releases/#{version}/ActionClip-#{version}.dmg"
   name "ActionClip"
@@ -8,7 +8,7 @@ cask "actionclip" do
   homepage "https://actionclip.app/"
 
   livecheck do
-    url "https://updates.actionclip.app/appcast.xml"
+    url "https://updates.actionclip.app/appcast-v2.xml"
     strategy :sparkle, &:short_version
   end
 
