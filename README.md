@@ -43,5 +43,13 @@ brew uninstall --zap --cask actionclip
 
 The cask tracks ActionClip's stable Sparkle feed. A scheduled workflow checks
 the public release metadata, verifies the DMG checksum, validates the updated
-cask, and commits version updates. It stops instead of changing the checksum if
-a published version URL is ever reused.
+cask, and commits version updates. Versions include the build number (for example,
+`2.3.4,649`) and use build-specific installer URLs, so a corrected build of the
+same app version can be distributed. It stops instead of changing the checksum
+if a published version/build URL is ever reused.
+
+Run the updater regression tests without downloading or installing an app:
+
+```sh
+python3 -m unittest discover -s .github/scripts/tests -v
+```

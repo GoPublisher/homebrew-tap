@@ -21,6 +21,9 @@ jobs:
       - name: Check out tap
         uses: actions/checkout@v5
 
+      - name: Test the release updater
+        run: python3 -m unittest discover -s .github/scripts/tests -v
+
       - name: Read and verify the latest stable release
         run: .github/scripts/update-actionclip-cask.sh
 

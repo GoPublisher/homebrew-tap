@@ -64,7 +64,8 @@ IFS=$'\t' read -r channel status version build dmg_url published_sha256 <<<"$rel
   exit 1
 }
 
-expected_url="https://updates.actionclip.app/releases/$version/ActionClip-$version.dmg"
+cask_version="$version,$build"
+expected_url="https://updates.actionclip.app/releases/$version-$build/ActionClip-$version-$build.dmg"
 [[ "$dmg_url" == "$expected_url" ]] || {
   echo "Unexpected DMG URL: $dmg_url" >&2
   exit 1
@@ -73,7 +74,7 @@ expected_url="https://updates.actionclip.app/releases/$version/ActionClip-$versi
 current_version="$(ruby -e 'puts File.read(ARGV.fetch(0))[/^  version "([^"]+)"$/, 1]' "$cask_file")"
 current_sha256="$(ruby -e 'puts File.read(ARGV.fetch(0))[/^  sha256 "([0-9a-f]+)"$/, 1]' "$cask_file")"
 
-if [[ "$current_version" == "$version" ]]; then
+if [[ "$current_version" == "$cask_version" ]]; then
   if [[ "$current_sha256" != "$published_sha256" ]]; then
     echo "Refusing to update a reused version URL with a different checksum." >&2
     echo "Published ActionClip versions must remain immutable." >&2
@@ -95,7 +96,7 @@ downloaded_sha256="$(shasum --algorithm 256 "$dmg_file" | awk '{print $1}')"
 }
 
 ACTIONCLIP_CASK_FILE="$cask_file" \
-ACTIONCLIP_VERSION="$version" \
+ACTIONCLIP_VERSION="$cask_version" \
 ACTIONCLIP_SHA256="$downloaded_sha256" \
 ruby <<'RUBY'
 path = ENV.fetch("ACTIONCLIP_CASK_FILE")

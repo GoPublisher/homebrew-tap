@@ -17,6 +17,9 @@ jobs:
       - name: Check out tap
         uses: actions/checkout@v5
 
+      - name: Test the release updater
+        run: python3 -m unittest discover -s .github/scripts/tests -v
+
       - name: Tap the checked-out repository for pull requests
         if: github.event_name == 'pull_request'
         run: |
